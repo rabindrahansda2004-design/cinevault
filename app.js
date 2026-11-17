@@ -52,23 +52,33 @@ function renderHome(list=DB.movies){
   curMovie=list[0];
   const fb=fallbackPoster(curMovie.title);
   const hero=document.getElementById("hero");
-  hero.style.cssText="position:relative;min-height:465px;display:flex;flex-direction:column;justify-content:flex-end;padding:24px 18px 26px;background-position:center 18%;background-size:cover;background-repeat:no-repeat;border-bottom:1px solid rgba(251,191,36,0.18);overflow:hidden";
-  hero.style.backgroundImage=`linear-gradient(to top,#040407 8%,rgba(4,4,7,0.72) 48%,rgba(4,4,7,0.22) 100%),url('${curMovie.poster||fb}'),url('${fb}')`;
+  hero.style.cssText="position:relative;min-height:530px;display:flex;flex-direction:column;justify-content:flex-end;padding:90px 18px 26px;background-position:center 15%;background-size:cover;background-repeat:no-repeat;overflow:hidden";
+  hero.style.backgroundImage=`linear-gradient(to top, #040407 6%, rgba(4,4,7,0.88) 32%, rgba(4,4,7,0.22) 65%, rgba(4,4,7,0.45) 100%), url('${curMovie.poster||fb}'), url('${fb}')`;
 
-  // Add subtle golden viewfinder corner brackets inside hero
-  let vf=document.getElementById("cvViewfinder");
-  if(!vf){
-    vf=document.createElement("div");vf.id="cvViewfinder";
-    vf.style.cssText="position:absolute;inset:14px;pointer-events:none;border-radius:18px;box-shadow:inset 0 0 0 1px rgba(251,191,36,0.12)";
-    vf.innerHTML=`<span style="position:absolute;top:0;left:0;width:16px;height:16px;border-top:2px solid #fbbf24;border-left:2px solid #fbbf24;border-top-left-radius:12px"></span><span style="position:absolute;top:0;right:0;width:16px;height:16px;border-top:2px solid #fbbf24;border-right:2px solid #fbbf24;border-top-right-radius:12px"></span>`;
-    hero.insertBefore(vf,hero.firstChild);
-  }
+  const oldVf=document.getElementById("cvViewfinder");
+  if(oldVf)oldVf.remove();
 
-  document.getElementById("hTitle").style.cssText="position:relative;margin:0 0 6px;font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1.08;letter-spacing:-0.3px;color:#fff;text-shadow:0 6px 24px rgba(0,0,0,0.95)";
-  document.getElementById("hTitle").innerHTML=`<span style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.14);border:1px solid rgba(251,191,36,0.35);padding:3px 10px;border-radius:99px;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;letter-spacing:1.6px;color:#fde68a;font-weight:800;margin-bottom:8px">✦ IMAX VAULT PREMIERE</span><br>${curMovie.title.toUpperCase()}`;
-  const gList=(curMovie.genres||curMovie.category||"Trending").split(",").slice(0,3).map(g=>`<span style="background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.14);padding:3px 10px;border-radius:99px;font-size:11px;margin-right:5px;color:#e2e8f0">${g.trim()}</span>`).join("");
-  document.getElementById("hMeta").style.position="relative";
-  document.getElementById("hMeta").innerHTML=`<div style="margin:6px 0 10px;display:flex;align-items:center;gap:8px"><span style="background:linear-gradient(135deg,rgba(253,230,138,0.22),rgba(245,158,11,0.14));border:1px solid rgba(251,191,36,0.45);color:#fde68a;padding:3px 11px;border-radius:99px;font-size:11px;font-weight:800">★ ${curMovie.rating||8.0} • ${curMovie.year||2026}</span></div><div>${gList}</div>`;
+  const hTitle=document.getElementById("hTitle");
+  hTitle.style.cssText="position:relative;z-index:2;margin:0 0 8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:900;line-height:1.06;letter-spacing:0.3px;color:#ffffff;text-shadow:0 4px 20px rgba(0,0,0,0.9)";
+  hTitle.innerHTML=`<span style="display:inline-block;background:rgba(245,158,11,0.18);backdrop-filter:blur(8px);border:1px solid rgba(251,191,36,0.45);color:#fde68a;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:4px 11px;border-radius:6px;margin-bottom:10px;text-transform:uppercase">FEATURED</span><br>${curMovie.title.toUpperCase()}`;
+
+  const rawDesc=(curMovie.description||"Stream in crystal-clear HD with instant multi-server playback and Watch Party sync.").trim();
+  const shortDesc=rawDesc.length>115?rawDesc.slice(0,115)+"...":rawDesc;
+
+  const hMeta=document.getElementById("hMeta");
+  hMeta.style.cssText="position:relative;z-index:2;margin:0";
+  hMeta.innerHTML=`<div style="font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+      <span style="color:#fbbf24">★ ${curMovie.rating||8.8}</span>
+      <span style="opacity:0.5">•</span>
+      <span>${curMovie.year||2026}</span>
+      <span style="opacity:0.5">•</span>
+      <span style="background:rgba(255,255,255,0.12);padding:1px 7px;border-radius:4px;font-size:11px">HD</span>
+    </div>
+    <p style="margin:0 0 18px;font-size:13.5px;line-height:1.48;color:#cbd5e1;max-width:460px;text-shadow:0 2px 10px rgba(0,0,0,0.85)">${shortDesc}</p>
+    <div id="cvHeroActions" style="display:flex;gap:12px;width:100%;max-width:460px">
+      <button onclick="startWatch(false)" style="flex:1;align-items:center;justify-content:center;gap:8px;padding:14px 16px;background:#ffffff;color:#050507;border:0;border-radius:99px;font-weight:800;font-size:14.5px;box-shadow:0 8px 24px rgba(0,0,0,0.6);cursor:pointer">▶ Play Now</button>
+      <button onclick="openMovie('${curMovie.id}')" style="flex:1;align-items:center;justify-content:center;gap:8px;padding:14px 16px;background:rgba(255,255,255,0.12);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#ffffff;border:1px solid rgba(255,255,255,0.22);border-radius:99px;font-weight:700;font-size:14.5px;cursor:pointer">ⓘ See More</button>
+    </div>`;
 
   const r1=document.getElementById("r1"),r2=document.getElementById("r2"),prog=getProg();
   r1.innerHTML=r2.innerHTML="";
@@ -76,7 +86,7 @@ function renderHome(list=DB.movies){
     const mFb=fallbackPoster(m.title);
     const sv=prog[m.id],pct=sv&&sv.d>0?Math.min(100,Math.round((sv.t/sv.d)*100)):0;
     const badge=pct>2?`<div style="height:3px;background:rgba(255,255,255,0.12);border-radius:2px;margin:5px 4px 2px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#f59e0b,#fde68a)"></div></div>`:"";
-    const rankBadge=i<5?`<span style="position:absolute;bottom:6px;left:7px;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fde68a;text-shadow:0 2px 10px rgba(0,0,0,0.95);line-height:1">#${i+1}</span>`:"";
+    const rankBadge=i<10?`<span style="position:absolute;bottom:6px;left:7px;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fde68a;text-shadow:0 2px 10px rgba(0,0,0,0.95);line-height:1">#${i+1}</span>`:"";
     const c=`<div class="card" onclick="openMovie('${m.id}')">
       <div style="position:relative">
         <img src="${m.poster||mFb}" onerror="this.onerror=null;this.src='${mFb}'" loading="lazy">
