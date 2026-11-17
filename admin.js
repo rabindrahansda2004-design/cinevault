@@ -1,7 +1,7 @@
 function tapLogo(){if(++taps>=5){taps=0;openAdmin();}setTimeout(()=>taps=0,1800);}
 function openAdmin(){document.getElementById("adminDesk").classList.add("open");if(sessionStorage.getItem("adm")==="1")showAdmin();}
 function closeAdmin(){document.getElementById("adminDesk").classList.remove("open");}
-function unlockAdmin(){if(document.getElementById("pinIn").value===(localStorage.getItem(PKEY)||"2026")){sessionStorage.setItem("adm","1");showAdmin();}else alert("Wrong PIN");}
+function unlockAdmin(){if(document.getElementById("pinIn").value===(localStorage.getItem(PKEY)||"WhoisRabi@1234")){sessionStorage.setItem("adm","1");showAdmin();}else alert("Wrong PIN");}
 function showAdmin(){
   document.getElementById("adminLock").style.display="none";document.getElementById("adminBody").style.display="block";
   document.getElementById("sAnn").value=DB.settings.announcement||"";document.getElementById("sAd").value=DB.settings.adCode||"";
@@ -17,7 +17,7 @@ function saveMovie(){
   document.querySelectorAll("#srvInputs .srv-row").forEach((r,i)=>{const u=r.querySelector(".s-u").value.trim();if(u)servers.push({name:r.querySelector(".s-n").value.trim()||`Server ${i+1}`,url:u});});
   if(!t||!p||!servers.length)return alert("Fill Title, Poster & 1+ Server URL");
   const id=document.getElementById("editId").value||"cv-"+Date.now();
-  const obj={id,title:t,year:document.getElementById("fYear").value||"2026",category:document.getElementById("fCat").value||"Trending",rating:document.getElementById("fRate").value||"8.8",poster:p,description:document.getElementById("fDesc").value,servers};
+  const obj={id,title:t,year:document.getElementById("fYear").value||"WhoisRabi@1234",category:document.getElementById("fCat").value||"Trending",rating:document.getElementById("fRate").value||"8.8",poster:p,description:document.getElementById("fDesc").value,servers};
   const i=DB.movies.findIndex(x=>x.id===id);if(i>-1)DB.movies[i]=obj;else DB.movies.unshift(obj);
   localStorage.setItem(KEY,JSON.stringify(DB));resetForm();renderAdminList();renderHome();alert("Saved!");
 }
