@@ -6,13 +6,7 @@ function openAdmin(){
     document.body.appendChild(m);
   }
   m.style.display="block";
-  showAdmin();return;
-  else m.innerHTML=`<div style="max-width:400px;margin:60px auto;background:#16161d;padding:20px;border-radius:14px">
-    <h3>🔒 Admin Desk</h3>
-    <input id="pinIn" type="password" placeholder="Enter Admin PIN" style="width:100%;padding:10px;margin:10px 0;border-radius:8px;border:1px solid #333;background:#0d0d12;color:#fff">
-    <button onclick="unlockAdmin()" style="width:100%;padding:10px;background:#e50914;color:#fff;border:0;border-radius:8px;font-weight:bold">Unlock Admin Desk</button>
-    <button onclick="document.getElementById('admMod').style.display='none'" style="width:100%;padding:8px;margin-top:8px;background:transparent;color:#aaa;border:0">Close</button>
-  </div>`;
+  return showAdmin();
 }
 function unlockAdmin(){
   if(document.getElementById("pinIn").value===(localStorage.getItem(PKEY)||"WhoisRabi@1234")){
