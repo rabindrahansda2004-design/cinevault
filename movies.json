@@ -1,1 +1,44 @@
-{"settings":{"announcement":"Welcome to CINEVAULT!","adCode":""},"movies":[{"id":"cv-1","title":"Big Buck Bunny (Demo)","year":"2026","category":"Trending","rating":"9.1","poster":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/640px-Big_buck_bunny_poster_big.jpg","description":"Test multi-server playback and Watch Party sync.","servers":[{"name":"Server 1 (HD)","url":"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"},{"name":"Server 2 (Embed)","url":"https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1"}]}]}
+{
+  "settings": { "announcement": "Cinevault Legal Multi-Source Streaming (HLS • Direct MP4 • Public Domain Embeds)", "adCode": "" },
+  "movies": [
+    {
+      "id": "cv-sintel",
+      "title": "Sintel (Blender Open Movie)",
+      "year": "2026",
+      "category": "Trending",
+      "rating": "9.4",
+      "poster": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Sintel_poster.jpg/640px-Sintel_poster.jpg",
+      "description": "Demonstrates HLS adaptive .m3u8 streaming alongside a Direct CDN .mp4 mirror.",
+      "servers": [
+        { "name": "HLS Adaptive CDN", "quality": "1080P", "lang": "Multi-Audio", "url": "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8" },
+        { "name": "Direct MP4 Mirror", "quality": "720P", "lang": "English", "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4" }
+      ]
+    },
+    {
+      "id": "cv-notld",
+      "title": "Night of the Living Dead (Public Domain)",
+      "year": "1968",
+      "category": "Classic",
+      "rating": "8.9",
+      "poster": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Night_of_the_Living_Dead_%281968%29_theatrical_poster.jpg/640px-Night_of_the_Living_Dead_%281968%29_theatrical_poster.jpg",
+      "description": "Public-domain classic hosted on Internet Archive with both Direct MP4 and Cloud Iframe Embed servers.",
+      "servers": [
+        { "name": "Archive Direct MP4", "quality": "720P", "lang": "English", "url": "https://archive.org/download/night_of_the_living_dead/night_of_the_living_dead_512kb.mp4" },
+        { "name": "Archive Cloud Embed", "quality": "HD", "lang": "English", "url": "https://archive.org/embed/night_of_the_living_dead" }
+      ]
+    },
+    {
+      "id": "cv-tos",
+      "title": "Tears of Steel (Open Sci-Fi)",
+      "year": "2026",
+      "category": "Sci-Fi",
+      "rating": "9.0",
+      "poster": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Tears_of_Steel_poster.jpg/640px-Tears_of_Steel_poster.jpg",
+      "description": "Open-source sci-fi film delivered via Mux Edge HLS segments and Google Cloud MP4 fallback.",
+      "servers": [
+        { "name": "Mux HLS Edge", "quality": "1080P", "lang": "Original", "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+        { "name": "Backup MP4 CDN", "quality": "720P", "lang": "Original", "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" }
+      ]
+    }
+  ]
+}
