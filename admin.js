@@ -6,7 +6,7 @@ function openAdmin(){
     document.body.appendChild(m);
   }
   m.style.display="block";
-  if(sessionStorage.getItem("adm")==="1")showAdmin();
+  showAdmin();return;
   else m.innerHTML=`<div style="max-width:400px;margin:60px auto;background:#16161d;padding:20px;border-radius:14px">
     <h3>🔒 Admin Desk</h3>
     <input id="pinIn" type="password" placeholder="Enter Admin PIN" style="width:100%;padding:10px;margin:10px 0;border-radius:8px;border:1px solid #333;background:#0d0d12;color:#fff">
