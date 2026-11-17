@@ -4,7 +4,142 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CINEVAULT</title><link rel="stylesheet" href="style.css">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e50914"><script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script><script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");</script></head>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e50914"><script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script><script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");</script><style id="midnight-css">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+  :root {
+    --bg-deep: #060609;
+    --bg-card: #101118;
+    --glass: rgba(16, 17, 24, 0.78);
+    --glass-border: rgba(245, 158, 11, 0.18);
+    --gold: #f59e0b;
+    --gold-bright: #fbbf24;
+    --gold-glow: rgba(245, 158, 11, 0.35);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    background: radial-gradient(circle at 50% 0%, #14121d 0%, var(--bg-deep) 55%);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-bottom: 84px;
+    overflow-x: hidden;
+  }
+  /* Glassmorphic Top Header */
+  header, .top-bar, nav.top {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    background: rgba(6, 6, 9, 0.82) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  /* Futuristic Search Bar */
+  .s-bar {
+    background: rgba(12, 13, 20, 0.92) !important;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 10px 14px;
+  }
+  .s-bar input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(245, 158, 11, 0.45) !important;
+    border-radius: 14px !important;
+    color: #fff !important;
+    padding: 11px 15px !important;
+    font-size: 14px !important;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.12);
+    transition: all 0.25s ease;
+  }
+  .s-bar input:focus {
+    outline: none;
+    border-color: var(--gold-bright) !important;
+    box-shadow: 0 0 24px rgba(245, 158, 11, 0.28);
+  }
+  /* Category & Server Pills */
+  .srv-pill {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+    border-radius: 99px !important;
+    padding: 7px 15px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .srv-pill.on, .srv-pill:active {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: #09090b !important;
+    border-color: #fbbf24 !important;
+    box-shadow: 0 4px 16px var(--gold-glow);
+    transform: translateY(-1px);
+  }
+  /* Movie Rows & Cards */
+  .row, #r1, #r2 {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 10px 14px 16px;
+    scrollbar-width: none;
+  }
+  .row::-webkit-scrollbar, #r1::-webkit-scrollbar, #r2::-webkit-scrollbar, #catBar::-webkit-scrollbar { display: none; }
+  .card {
+    position: relative;
+    min-width: 132px;
+    max-width: 132px;
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.65);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+    flex-shrink: 0;
+  }
+  .card:hover, .card:active {
+    transform: translateY(-5px) scale(1.03);
+    border-color: rgba(245, 158, 11, 0.55);
+    box-shadow: 0 14px 30px rgba(245, 158, 11, 0.22);
+  }
+  .card img {
+    width: 100%;
+    height: 184px;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+    background: linear-gradient(135deg, #161822, #0b0c12);
+    animation: none !important;
+  }
+  .card p {
+    margin: 7px 4px 3px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #f1f5f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Floating Glass Bottom Navigation */
+  .b-nav, nav.bottom, footer {
+    position: fixed !important;
+    bottom: 0; left: 0; right: 0;
+    z-index: 95;
+    background: rgba(8, 9, 14, 0.88) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(245, 158, 11, 0.16) !important;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.7);
+  }
+  @media (min-width: 768px) {
+    #hero { min-height: 520px !important; padding: 36px 40px !important; }
+    .card { min-width: 168px; max-width: 168px; }
+    .card img { height: 236px; }
+  }
+</style>
+</head>
 <body>
 <div id="annBar" class="ann-bar" style="display:none"></div>
 <header>
