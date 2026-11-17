@@ -65,42 +65,50 @@ function renderHome(list=DB.movies){
 function openMovie(id){
   curMovie=DB.movies.find(x=>x.id===id);if(!curMovie)return;curSrvIdx=0;
   const mod=document.getElementById("mod");
-  const gPills=(curMovie.genres||curMovie.category||"Movie").split(",").map(g=>`<span style="background:#1c1c24;border:1px solid #2e2e3a;color:#d1d5db;padding:4px 11px;border-radius:99px;font-size:11px">${g.trim()}</span>`).join("");
-  const castHtml=curMovie.cast?`<div style="font-size:12px;color:#9ca3af;margin:8px 0"><b style="color:#fff">Cast:</b> ${curMovie.cast}</div>`:"";
+  mod.style.background="rgba(11,11,15,0.88)";
+  mod.style.backdropFilter="blur(18px)";
+  mod.style.webkitBackdropFilter="blur(18px)";
+  const gPills=(curMovie.genres||curMovie.category||"Movie").split(",").map(g=>`<span style="background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.14);color:#e5e7eb;padding:5px 12px;border-radius:99px;font-size:11px">${g.trim()}</span>`).join("");
+  const castHtml=curMovie.cast?`<div style="font-size:12px;color:#9ca3af;margin:10px 0"><b style="color:#fff">Cast:</b> ${curMovie.cast}</div>`:"";
   const desc=curMovie.description||"No description available.";
   const shortDesc=desc.length>135?desc.slice(0,135)+"...":desc;
   const trUrl=curMovie.trailer||`https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(curMovie.title+" "+(curMovie.year||"")+" official trailer")}`;
   const srvsHtml=(curMovie.servers||[]).length?(curMovie.servers||[]).map((s,i)=>`<button class="srv-pill ${i?'':'on'}" onclick="curSrvIdx=${i};document.querySelectorAll('#mSrvs .srv-pill').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${s.name}</button>`).join(""):`<span style="font-size:12px;color:#9ca3af">Trailer-only title (Add movie servers in Admin)</span>`;
 
-  mod.innerHTML=`<div style="max-width:520px;margin:0 auto;padding:16px;color:#fff;position:relative">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <button onclick="document.getElementById('mod').classList.remove('open')" style="background:#1c1c24;color:#fff;border:1px solid #333;width:36px;height:36px;border-radius:50%;font-size:16px">←</button>
-      <span style="font-weight:800;letter-spacing:1px;font-size:13px;color:#e50914">CINEVAULT</span>
-      <div style="width:36px"></div>
-    </div>
+  mod.innerHTML=`<div style="position:relative;min-height:100vh;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;height:360px;background:url('${curMovie.poster}') center/cover no-repeat;opacity:0.28;filter:blur(10px) saturate(1.3);transform:scale(1.08);pointer-events:none"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:370px;background:linear-gradient(to bottom,rgba(11,11,15,0.25) 0%,rgba(11,11,15,0.82) 65%,#0b0b0f 100%);pointer-events:none"></div>
 
-    <div style="display:flex;gap:14px;align-items:flex-start;background:linear-gradient(180deg,rgba(229,9,20,.12),transparent);padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.08)">
-      <img id="mImg" src="${curMovie.poster}" style="width:112px;height:165px;object-fit:cover;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.6)">
-      <div style="flex:1">
-        <div style="font-size:11px;font-weight:800;color:#e50914;letter-spacing:1px;margin-bottom:4px">● MOVIE</div>
-        <h2 id="mTit" style="margin:0 0 8px;font-size:20px;line-height:1.15;text-transform:uppercase">${curMovie.title}</h2>
-        <div id="mMet" style="display:inline-flex;align-items:center;gap:6px;background:rgba(229,9,20,.16);border:1px solid rgba(229,9,20,.35);padding:4px 10px;border-radius:99px;font-size:12px;font-weight:bold;color:#fca5a5">
-          <span>★ ${curMovie.rating||8.0}</span><span>•</span><span>${curMovie.year||2026}</span>
+    <div style="position:relative;max-width:520px;margin:0 auto;padding:16px;color:#fff">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <button onclick="document.getElementById('mod').classList.remove('open')" style="background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);color:#fff;border:1px solid rgba(255,255,255,0.15);width:38px;height:38px;border-radius:50%;font-size:16px">←</button>
+        <span style="font-weight:800;letter-spacing:1.2px;font-size:13px;color:#e50914">CINEVAULT</span>
+        <div style="width:38px"></div>
+      </div>
+
+      <div style="display:flex;gap:15px;align-items:flex-end;padding:4px 0 12px;background:transparent">
+        <img id="mImg" src="${curMovie.poster}" style="width:115px;height:170px;object-fit:cover;border-radius:14px;box-shadow:0 12px 28px rgba(0,0,0,0.75);border:1px solid rgba(255,255,255,0.14)">
+        <div style="flex:1;padding-bottom:4px">
+          <div style="font-size:11px;font-weight:800;color:#e50914;letter-spacing:1px;margin-bottom:5px">● MOVIE</div>
+          <h2 id="mTit" style="margin:0 0 10px;font-size:21px;line-height:1.15;text-transform:uppercase;text-shadow:0 2px 10px rgba(0,0,0,0.8)">${curMovie.title}</h2>
+          <div id="mMet" style="display:inline-flex;align-items:center;gap:6px;background:rgba(229,9,20,0.22);backdrop-filter:blur(8px);border:1px solid rgba(229,9,20,0.45);padding:4px 11px;border-radius:99px;font-size:12px;font-weight:bold;color:#fca5a5">
+            <span>★ ${curMovie.rating||8.0}</span><span>•</span><span>${curMovie.year||2026}</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">${gPills}</div>
-    ${castHtml}
-    <p id="mDes" style="font-size:13px;line-height:1.5;color:#d1d5db;margin:8px 0">${shortDesc} ${desc.length>135?`<span onclick="document.getElementById('mDes').textContent=curMovie.description" style="color:#e50914;font-weight:bold;cursor:pointer">Read more</span>`:""}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">${gPills}</div>
+      ${castHtml}
+      <p id="mDes" style="font-size:13px;line-height:1.55;color:#d1d5db;margin:10px 0">${shortDesc} ${desc.length>135?`<span onclick="document.getElementById('mDes').textContent=curMovie.description" style="color:#e50914;font-weight:bold;cursor:pointer">Read more</span>`:""}</p>
 
-    <div id="mSrvs" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0">${srvsHtml}</div>
+      <div id="mSrvs" style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">${srvsHtml}</div>
 
-    <button onclick="startWatch(false)" style="width:100%;padding:13px;background:#e50914;color:#fff;border:0;border-radius:99px;font-weight:bold;font-size:15px;box-shadow:0 6px 20px rgba(229,9,20,.45);margin-top:6px">▶ Play</button>
+      <button onclick="startWatch(false)" style="width:100%;padding:14px;background:#e50914;color:#fff;border:0;border-radius:99px;font-weight:bold;font-size:15px;box-shadow:0 8px 24px rgba(229,9,20,0.5);margin-top:6px">▶ Play</button>
 
-    <div style="display:flex;gap:8px;margin-top:9px">
-      <button onclick="openTrailerTab('${trUrl.replace(/'/g,"\\'")}')" style="flex:1;padding:11px;background:#16161d;color:#fff;border:1px solid #333;border-radius:99px;font-weight:bold;font-size:13px">📹 Trailer</button>
-      <button onclick="startWatch(true)" style="flex:1;padding:11px;background:#16161d;color:#fff;border:1px solid #333;border-radius:99px;font-weight:bold;font-size:13px">👥 Watch Party</button>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button onclick="openTrailerTab('${trUrl.replace(/'/g,"\\'")}')" style="flex:1;padding:12px;background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);color:#fff;border:1px solid rgba(255,255,255,0.14);border-radius:99px;font-weight:bold;font-size:13px">📹 Trailer</button>
+        <button onclick="startWatch(true)" style="flex:1;padding:12px;background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);color:#fff;border:1px solid rgba(255,255,255,0.14);border-radius:99px;font-weight:bold;font-size:13px">👥 Watch Party</button>
+      </div>
     </div>
   </div>`;
   mod.classList.add("open");
