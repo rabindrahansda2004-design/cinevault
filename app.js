@@ -7,7 +7,7 @@ async function initApp(){
   const a=document.getElementById("annBar");
   a.textContent=DB.settings.announcement||"";a.style.display=a.textContent?"block":"none";
   document.getElementById("adSlot").innerHTML=DB.settings.adCode||"";
-  renderHome();if(location.hash==="#admin")openAdmin();
+  renderHome();
 }
 function renderHome(list=DB.movies){
   if(!list.length)return;curMovie=list[0];
@@ -38,7 +38,7 @@ function loadServer(i,sync=false){
   document.getElementById("srvBar").innerHTML=curMovie.servers.map((x,idx)=>`<button class="srv-pill ${idx===i?'on':''}" onclick="loadServer(${idx})">${x.name}</button>`).join("");
   if(!sync&&window.broadcastServer)broadcastServer(curMovie.id,i);
 }
-function filterLocal(q){if(q.trim()==="WhoisRabi@1234"||q.trim()==="#admin"){document.getElementById("sIn").value="";toggleSearch();openAdmin();return;}q=q.toLowerCase();renderHome(q?DB.movies.filter(m=>m.title.toLowerCase().includes(q)):DB.movies);}
+function filterLocal(q){if(q.trim()==="WhoisRabi@1234"){document.getElementById("sIn").value="";toggleSearch();openAdmin();return;}q=q.toLowerCase();renderHome(q?DB.movies.filter(m=>m.title.toLowerCase().includes(q)):DB.movies);}
 function toggleSearch(){const s=document.getElementById("sBar");s.classList.toggle("open");if(s.classList.contains("open"))document.getElementById("sIn").focus();}
 function goHome(){document.getElementById("mod").classList.remove("open");document.getElementById("sBar").classList.remove("open");renderHome();}
 window.addEventListener("DOMContentLoaded",initApp);
