@@ -17,7 +17,7 @@ function saveMovie(){
   document.querySelectorAll("#srvInputs .srv-row").forEach((r,i)=>{const u=r.querySelector(".s-u").value.trim();if(u)servers.push({name:r.querySelector(".s-n").value.trim()||`Server ${i+1}`,url:u});});
   if(!t||!p||!servers.length)return alert("Fill Title, Poster & 1+ Server URL");
   const id=document.getElementById("editId").value||"cv-"+Date.now();
-  const obj={id,title:t,year:document.getElementById("fYear").value||"WhoisRabi@1234",category:document.getElementById("fCat").value||"Trending",rating:document.getElementById("fRate").value||"8.8",poster:p,description:document.getElementById("fDesc").value,servers};
+  const obj={id,title:t,year:document.getElementById("fYear").value||"2026",category:document.getElementById("fCat").value||"Trending",rating:document.getElementById("fRate").value||"8.8",poster:p,description:document.getElementById("fDesc").value,servers};
   const i=DB.movies.findIndex(x=>x.id===id);if(i>-1)DB.movies[i]=obj;else DB.movies.unshift(obj);
   localStorage.setItem(KEY,JSON.stringify(DB));resetForm();renderAdminList();renderHome();alert("Saved!");
 }
