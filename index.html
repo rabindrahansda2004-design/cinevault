@@ -6,19 +6,27 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
-<header><div class="logo"><span class="badge">C</span>CINEVAULT</div><button class="tg" style="background:none" onclick="openJoin()">+ Join Code</button></header>
+<div id="annBar" class="ann-bar" style="display:none"></div>
+<header>
+  <div class="logo" onclick="tapLogo()"><span class="badge">C</span>CINEVAULT</div>
+  <button class="tg" style="background:none" onclick="openJoin()">+ Join Code</button>
+</header>
 <div class="s-bar" id="sBar"><input id="sIn" placeholder="Type movie name..." oninput="filterLocal(this.value)"></div>
 <div class="hero" id="hero"><div class="hero-in">
   <div class="tag">SPOTLIGHT</div><h1 id="hTitle"></h1><div class="meta" id="hMeta"></div>
   <div class="btns"><button class="btn gold" onclick="startWatch(false)">Watch Solo</button><button class="btn glass" onclick="startWatch(true)">Watch With Friends</button></div>
 </div></div>
+<div id="adSlot"></div>
 <h2>Trending This Week</h2><div class="row" id="r1"></div>
 <h2>Popular in India</h2><div class="row" id="r2"></div>
+
 <div class="modal" id="mod">
   <button class="btn glass" onclick="mod.classList.remove('open')">← Back</button><br>
-  <img id="mImg"><h1 id="mTit"></h1><div class="meta" id="mMet"></div><p id="mDes" style="color:#cbd5e1;margin-bottom:16px"></p>
+  <img id="mImg"><h1 id="mTit"></h1><div class="meta" id="mMet"></div><p id="mDes" style="color:#cbd5e1;margin-bottom:12px"></p>
+  <div class="srv-preview" id="mSrvs"></div>
   <div class="btns"><button class="btn glass" onclick="startWatch(false)">Watch Solo</button><button class="btn gold" onclick="startWatch(true)">Watch With Friends</button></div>
 </div>
+
 <div class="sheet-bg" id="jSheet" onclick="if(event.target===this)jSheet.classList.remove('open')">
   <div class="sheet">
     <div class="tag">WATCH TOGETHER</div><h3 style="margin-top:4px">Join Friend's Party</h3>
@@ -26,18 +34,74 @@
     <div class="btns"><button class="btn glass" onclick="pasteCode()">Paste</button><button class="btn gold" onclick="submitJoin()">Enter Room</button></div>
   </div>
 </div>
+
 <div class="party" id="party">
   <div class="p-top"><b id="pTitle">Room</b><span id="roomCode" style="color:#f59e0b"></span><button class="btn glass" style="flex:0;padding:5px 10px" onclick="leaveParty()">Exit</button></div>
-  <video class="vid-box" id="player" controls playsinline src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"></video>
+  <div class="vid-stage" id="vidStage">
+    <video class="vid-box" id="player" controls playsinline></video>
+    <iframe class="vid-box" id="extPlayer" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" frameborder="0" style="display:none"></iframe>
+  </div>
+  <div class="srv-bar" id="srvBar"></div>
   <div class="cams" id="cams"><video id="myCam" autoplay muted playsinline></video></div>
   <div class="ctrls"><button id="micBtn" onclick="toggleMic()">Mic On</button><button id="camBtn" onclick="toggleCam()">Cam On</button><button onclick="sendReact('🔥')">🔥</button><button onclick="sendReact('😂')">😂</button><button onclick="copyCode()">Copy Code</button></div>
   <div class="chat" id="chatBox"></div>
   <div class="c-bar"><input id="cIn" placeholder="Comment..."><button class="btn gold" style="flex:0;padding:10px 16px" onclick="sendMsg()">Send</button></div>
 </div>
+
+<div class="modal admin-desk" id="adminDesk">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <h2 style="margin:0;color:#f59e0b">⚙ Admin Desk</h2>
+    <button class="btn glass" style="flex:0;padding:6px 12px" onclick="closeAdmin()">Close</button>
+  </div>
+  <div id="adminLock">
+    <p style="color:#cbd5e1;font-size:13px">Enter Admin PIN (default: <b>2026</b>)</p>
+    <input id="pinIn" type="password" class="adm-in" placeholder="Enter PIN">
+    <button class="btn gold" onclick="unlockAdmin()">Unlock Admin Desk</button>
+  </div>
+  <div id="adminBody" style="display:none">
+    <div class="adm-card">
+      <h3 id="formHead">Add / Edit Movie</h3>
+      <input type="hidden" id="editId">
+      <input id="fTitle" class="adm-in" placeholder="Movie Title">
+      <div style="display:flex;gap:8px">
+        <input id="fYear" class="adm-in" placeholder="Year (2026)">
+        <input id="fCat" class="adm-in" placeholder="Row (Trending / India)">
+        <input id="fRate" class="adm-in" placeholder="Rating (8.9)">
+      </div>
+      <input id="fPoster" class="adm-in" placeholder="Poster Image URL (https://...)">
+      <input id="fDesc" class="adm-in" placeholder="Short Description">
+      <div style="margin:8px 0 4px;font-size:12px;color:#f59e0b;font-weight:700">3rd-Party Player Links (Multi-Server)</div>
+      <div id="srvInputs"></div>
+      <button class="btn glass" style="margin-bottom:10px;width:100%" onclick="addSrvRow()">+ Add Another Server Link</button>
+      <div class="btns">
+        <button class="btn gold" onclick="saveMovie()">Save Movie</button>
+        <button class="btn glass" onclick="resetForm()">Clear</button>
+      </div>
+    </div>
+
+    <div class="adm-card">
+      <h3>Manage Movies (<span id="mCount">0</span>)</h3>
+      <div id="adminMovieList"></div>
+    </div>
+
+    <div class="adm-card">
+      <h3>Site Controls & Publish</h3>
+      <input id="sAnn" class="adm-in" placeholder="Top Announcement Banner (leave empty to hide)">
+      <input id="sAd" class="adm-in" placeholder="Ad Banner HTML / Script URL (optional)">
+      <input id="sPin" class="adm-in" placeholder="Change Admin PIN">
+      <div class="btns" style="margin-top:8px">
+        <button class="btn gold" onclick="saveSettings()">Save Settings</button>
+        <button class="btn glass" onclick="copyCatalogJSON()">Copy movies.json</button>
+      </div>
+      <p style="font-size:11px;color:#94a3b8;margin-top:8px">Tip: Movies save immediately on this device. Tap <b>Copy movies.json</b> and paste into ~/cinevault/movies.json + <code>git push</code> to publish to all users.</p>
+    </div>
+  </div>
+</div>
+
 <nav class="dock">
   <button class="on" id="bHome" onclick="goHome()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
   <button id="bSearch" onclick="toggleSearch()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>Search</button>
   <button id="bParty" onclick="openJoin()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Party</button>
 </nav>
-<script src="app.js"></script><script src="party.js"></script><script src="player.js"></script>
+<script src="app.js"></script><script src="party.js"></script><script src="admin.js"></script>
 </body></html>

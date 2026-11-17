@@ -1,26 +1,44 @@
-const DEMO=[
-  {title:"Avengers: Doomsday",vote_average:8.9,release_date:"16 Dec 2026",r:1,p:"https://images.unsplash.com/photo-1635805737707-575885ab0820?w=500",b:"https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=900",overview:"Heroes from three distinct universes collide in an unprecedented battle."},
-  {title:"The Odyssey",vote_average:8.4,release_date:"15 Jul 2026",r:1,p:"https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500",b:"https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=900",overview:"A mythic voyage across treacherous seas to return home."},
-  {title:"Sunrise on the Reaping",vote_average:8.7,release_date:"18 Nov 2026",r:1,p:"https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500",b:"https://images.unsplash.com/photo-1534447677768-be436bb09401?w=900",overview:"Return to Panem for the 50th Hunger Games."},
-  {title:"Ramayana: Legend",vote_average:9.1,release_date:"05 Nov 2026",r:2,p:"https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=500",b:"https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=900",overview:"An ancient epic following a young prince on a legendary journey."},
-  {title:"Jailer 2",vote_average:8.2,release_date:"14 Oct 2026",r:2,p:"https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=500",b:"https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=900",overview:"A retired jailer unleashes a storm when his family is threatened."}
-];
-function initUI(list){
-  curMovie=list[0];
-  hero.style.backgroundImage=`url(${list[0].b})`;hTitle.textContent=list[0].title;
-  hMeta.textContent=`★ ${list[0].vote_average} • ${list[0].release_date} • 4K HDR`;
-  draw(list.filter(x=>x.r===1),r1);draw(list.filter(x=>x.r===2),r2);
+let DB={settings:{announcement:"",adCode:""},movies:[]},curMovie=null,curSrvIdx=0,taps=0;
+const KEY="cv_db_v1",PKEY="cv_pin";
+
+async function initApp(){
+  try{const r=await fetch("movies.json?v="+Date.now());if(r.ok)DB=await r.json();}catch(e){}
+  const s=localStorage.getItem(KEY);if(s)try{DB=JSON.parse(s);}catch(e){}
+  const a=document.getElementById("annBar");
+  a.textContent=DB.settings.announcement||"";a.style.display=a.textContent?"block":"none";
+  document.getElementById("adSlot").innerHTML=DB.settings.adCode||"";
+  renderHome();if(location.hash==="#admin")openAdmin();
 }
-function draw(list,el){
-  el.innerHTML=list.map(m=>`<div class="card" onclick='openM(${JSON.stringify(m).replace(/'/g,"")})'><img src="${m.p}"><p>${m.title}</p></div>`).join('');
+function renderHome(list=DB.movies){
+  if(!list.length)return;curMovie=list[0];
+  document.getElementById("hero").style.backgroundImage=`url('${curMovie.poster}')`;
+  document.getElementById("hTitle").textContent=curMovie.title;
+  document.getElementById("hMeta").textContent=`${curMovie.year||2026} • ⭐ ${curMovie.rating||8.8} • ${(curMovie.servers||[]).length} Servers`;
+  const r1=document.getElementById("r1"),r2=document.getElementById("r2");r1.innerHTML=r2.innerHTML="";
+  list.forEach((m,i)=>{
+    const c=`<div class="card" onclick="openMovie('${m.id}')"><img src="${m.poster}" loading="lazy"><p>${m.title}</p></div>`;
+    if((m.category||"").toLowerCase().includes("india")||i%2)r2.innerHTML+=c;
+    if(!(m.category||"").toLowerCase().includes("india")||list.length<3)r1.innerHTML+=c;
+  });
 }
-function openM(m){
-  curMovie=m;mImg.src=m.p;mTit.textContent=m.title;mMet.textContent=`★ ${m.vote_average} • ${m.release_date}`;mDes.textContent=m.overview;mod.classList.add('open');
+function openMovie(id){
+  curMovie=DB.movies.find(x=>x.id===id);if(!curMovie)return;curSrvIdx=0;
+  document.getElementById("mImg").src=curMovie.poster;
+  document.getElementById("mTit").textContent=curMovie.title;
+  document.getElementById("mMet").textContent=`${curMovie.year||2026} • ⭐ ${curMovie.rating||8.8}`;
+  document.getElementById("mDes").textContent=curMovie.description||"";
+  document.getElementById("mSrvs").innerHTML=(curMovie.servers||[]).map((s,i)=>`<button class="srv-pill ${i?'':'on'}" onclick="curSrvIdx=${i};document.querySelectorAll('#mSrvs .srv-pill').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${s.name}</button>`).join("");
+  document.getElementById("mod").classList.add("open");
 }
-function openJoin(){jSheet.classList.add('open');}
-async function pasteCode(){try{jCode.value=await navigator.clipboard.readText();}catch(e){jCode.focus();}}
-function submitJoin(){if(!jCode.value.trim())return;jSheet.classList.remove('open');party.classList.add('open');pTitle.textContent="Friend's Room";initPeer(jCode.value.trim());}
-function toggleSearch(){sBar.classList.toggle('open');bSearch.classList.toggle('on');bHome.classList.remove('on');sIn.focus();}
-function goHome(){sBar.classList.remove('open');bHome.classList.add('on');bSearch.classList.remove('on');initUI(DEMO);}
-function filterLocal(q){draw(DEMO.filter(m=>m.title.toLowerCase().includes(q.toLowerCase())),r1);}
-initUI(DEMO);
+function loadServer(i,sync=false){
+  if(!curMovie||!curMovie.servers[i])return;curSrvIdx=i;
+  const s=curMovie.servers[i],v=document.getElementById("player"),f=document.getElementById("extPlayer");
+  if(/\.(mp4|webm|m3u8)(\?|$)/i.test(s.url)){f.style.display="none";f.src="";v.style.display="block";v.src=s.url;v.play().catch(()=>{});}
+  else{v.pause();v.style.display="none";v.src="";f.style.display="block";f.src=s.url;}
+  document.getElementById("srvBar").innerHTML=curMovie.servers.map((x,idx)=>`<button class="srv-pill ${idx===i?'on':''}" onclick="loadServer(${idx})">${x.name}</button>`).join("");
+  if(!sync&&window.broadcastServer)broadcastServer(curMovie.id,i);
+}
+function filterLocal(q){q=q.toLowerCase();renderHome(q?DB.movies.filter(m=>m.title.toLowerCase().includes(q)):DB.movies);}
+function toggleSearch(){const s=document.getElementById("sBar");s.classList.toggle("open");if(s.classList.contains("open"))document.getElementById("sIn").focus();}
+function goHome(){document.getElementById("mod").classList.remove("open");document.getElementById("sBar").classList.remove("open");renderHome();}
+window.addEventListener("DOMContentLoaded",initApp);
